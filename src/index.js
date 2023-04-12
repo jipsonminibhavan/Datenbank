@@ -31,11 +31,20 @@ app.get("/documents", async (req, res) => {
   ]);*/
 });
 app.post("/documents", async (req, res) => {
-  const { Document } = require("./models/DocumentModel");
-  console.log(req.body);
-  const newDoc = new Document({ title: req.body.title });
-  const insertedDoc = await newDoc.save();
-  res.json(insertedDoc);
+  try {
+    const { Document } = require("./models/DocumentModel");
+    console.log(req.body);
+    const newDoc = new Document({
+      title: req.body.title,
+      keywords: req.body.keywords,
+      author: req.body.author,
+    });
+    const insertedDoc = await newDoc.save();
+    res.json(insertedDoc);
+  } catch (error) {
+    console.error(error);
+    res.json({ msg: error });
+  }
 });
 
 const start = async () => {
