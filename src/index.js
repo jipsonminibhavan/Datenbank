@@ -1,9 +1,12 @@
 const express = require("express");
+const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const app = express();
 const mongoose = require("mongoose");
 app.use(bodyParser.json());
 const port = 3000;
+
+app.use(morgan("tiny"));
 
 app.get("/", (req, res) => {
   res.json({ Name: "jipson" });
