@@ -13,6 +13,10 @@ const DocumentSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    file: {
+      type: Object,
+      required: true,
+    },
   },
   { timestamps: true }
 );

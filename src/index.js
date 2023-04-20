@@ -83,7 +83,7 @@ app.get("/documents", async (req, res) => {
     },
   ]);*/
 });
-app.post("/documents", async (req, res) => {
+app.post("/documents", upload.single("document"), async (req, res) => {
   try {
     const { Document } = require("./models/DocumentModel");
     console.log(req.body);
@@ -91,6 +91,12 @@ app.post("/documents", async (req, res) => {
       title: req.body.title,
       keywords: req.body.keywords,
       author: req.body.author,
+      file: {
+        size: req.file.size,
+        id: req.file.filename,
+        path: req.file.path,
+        type: req.file.mimetype,
+      },
     });
     const insertedDoc = await newDoc.save();
     res.json(insertedDoc);
@@ -102,6 +108,7 @@ app.post("/documents", async (req, res) => {
 
 app.post("/upload", upload.single("document"), (req, res, next) => {
   console.log(req.file);
+  console.log(req.body);
   next();
   // req.file is the `doc` file
   // req.body will hold the text fields, if there were any
@@ -144,7 +151,7 @@ app.get("/upload/:id", (req, res) => {
   });
 });
 
-app.delete("/upload/:id", (req, res) => {
+app.delete("/documents/:id", (req, res) => {
   const id = req.params.id;
   const filepath = `${process.cwd()}/uploads/${id}`;
 
@@ -157,7 +164,7 @@ app.delete("/upload/:id", (req, res) => {
     }
   });
 });
-
+app;
 const start = async () => {
   try {
     await mongoose.connect(
