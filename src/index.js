@@ -158,6 +158,13 @@ app.get('/download/:date/:id', (req, res) => {
   });
 });*/
 
+//Aufruf eines einzelnen Datensatzes über api ermöglichen
+app.get("/dogs/:id", async (req, res) => {
+  const { id } = req.params;
+  const docu = await Document.findById(id);
+  return res.status(200).json(docu);
+});
+
 /*app.delete("/documents/:id", (req, res) => {
   const id = req.params.id;
   const filepath = `${process.cwd()}/uploads/${id}`;
@@ -171,13 +178,6 @@ app.get('/download/:date/:id', (req, res) => {
     }
   });
 });*/
-
-//Aufruf eines einzelnen Datensatzes über api ermöglichen
-app.get("/dogs/:id", async (req, res) => {
-  const { id } = req.params;
-  const docu = await Document.findById(id);
-  return res.status(200).json(docu);
-});
 
 //MongoDB Eintrag löschen
 app.delete("/documents/:id", async (req, res) => {
