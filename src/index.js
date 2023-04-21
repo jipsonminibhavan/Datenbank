@@ -5,8 +5,13 @@ const app = express();
 const mongoose = require("mongoose");
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" }); //Multer-Upload-Objekt; neue Multer Instanz wird erzeugt.
-/*
-const upload = multer({
+
+/*-------------------------------------------------------------------------------------------------------------
+-Nur Dateitypen als PDFs hochladen,
+ => multer-Upload-Objekt konfigurieren und eine fileFilter-Funktion schreiben die nur PDF-Dateien zulässt
+ -fileFilter-Funktion verwendet, dass nur Dateien mit dem MIME-Typ application/pdf hochgeladen werden
+
+ const upload = multer({
   dest: 'uploads/',
   fileFilter: (req, file, cb) => {
     const allowedTypes = ['application/pdf'];
@@ -18,10 +23,7 @@ const upload = multer({
     cb(null, true);
   }
 });
- -Nur Dateitypen als PDFs hochladen,
- => multer-Upload-Objekt konfigurieren und eine fileFilter-Funktion schreiben die nur PDF-Dateien zulässt
- -fileFilter-Funktion verwendet, dass nur Dateien mit dem MIME-Typ application/pdf hochgeladen werden
-*/
+------------------------------------------------------------------------------------------------------------------*/
 
 app.use(bodyParser.json());
 const port = 3000;
@@ -30,7 +32,7 @@ app.get("/", (req, res) => {
   res.json({ Name: "jipson" });
 });
 
-/*
+/*-------------------------------------------------------------------------------------
 -Multer-DiskStorage-Instanz, um den Speicherort 
  und den Dateinamen zu definieren an dem die hochgeladene Datei gespeichert wird
 
@@ -60,12 +62,14 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
-*/
+--------------------------------------------------------------------------------------------*/
 
+/* Route, um alle Documente in einer Datenbank abzurufen und als JSON-Objekt an einen Client zurückzugeben, 
+der eine Anfrage an den Pfad `/documents` sendet.*/
 app.get("/documents", async (req, res) => {
   const { Document } = require("./models/DocumentModel");
   const allDocs = await Document.find();
-  res.json(allDocs);
+  res.status(200).json(allDocs);
   /*res.json([
     {
       id: 1,
@@ -83,6 +87,9 @@ app.get("/documents", async (req, res) => {
     },
   ]);*/
 });
+
+//HTTP POST verb/ Route zum Hochladen einer PDF-Datei /im Ordner uploads gespeichert/ fügen die Daten der Datenbank hinzu.
+
 app.post("/documents", upload.single("document"), async (req, res) => {
   try {
     const { Document } = require("./models/DocumentModel");
@@ -115,7 +122,8 @@ app.post("/upload", upload.single("document"), (req, res, next) => {
   //upload.single technisch betrachtet die Middleware, vorherige Schritte ist Konfig.
 });
 
-/*--> POST-Route, um die PDF-Datei hochzuladen:
+/*------------------------------------------------------------------------------------
+--> POST-Route, um die PDF-Datei hochzuladen:
 app.post('/upload', upload.single('pdf'), (req, res) => {
   res.send('PDF-Datei wurde erfolgreich hochgeladen!');
 });<----
@@ -135,10 +143,9 @@ app.get('/download/:date/:id', (req, res) => {
   });
 }); <-----
 
- */
-//- PDF-Dateien im Ordner uploads gespeichert/ gespeichert /Datum und ID benannt
+ ------------------------------------------------------------------------------------------*/
 
-app.get("/upload/:id", (req, res) => {
+/*app.get("/upload/:id", async (req, res) => {
   const id = req.params.id;
   const filepath = `${process.cwd()}/uploads/${id}`; // absoluter Pfad ()
   res.setHeader("Content-Type", "application/pdf");
@@ -149,9 +156,9 @@ app.get("/upload/:id", (req, res) => {
     }
     return filepath;
   });
-});
+});*/
 
-app.delete("/documents/:id", (req, res) => {
+/*app.delete("/documents/:id", (req, res) => {
   const id = req.params.id;
   const filepath = `${process.cwd()}/uploads/${id}`;
 
@@ -163,13 +170,30 @@ app.delete("/documents/:id", (req, res) => {
       res.status(204).send("Datei wurde erfolgreich gelöscht");
     }
   });
+});*/
+
+//Aufruf eines einzelnen Datensatzes über api ermöglichen
+app.get("/dogs/:id", async (req, res) => {
+  const { id } = req.params;
+  const docu = await Document.findById(id);
+  return res.status(200).json(docu);
 });
-app;
+
+//MongoDB Eintrag löschen
+app.delete("/documents/:id", async (req, res) => {
+  const { id } = req.params;
+  const deletedDocument = await Dog.findByIdAndDelete(id);
+  return res.status(200).json(deletedDocument);
+});
+
+// Verbindung zur MongoDB-Datenbank herstellen
 const start = async () => {
   try {
     await mongoose.connect(
       "mongodb://localhost:27017/mongoose?authSource=admin"
     );
+
+    //Server starte auf Port 3000
     app.listen(3000, () => console.log(`Example app listening on port 3000`));
   } catch (error) {
     console.error(error);
