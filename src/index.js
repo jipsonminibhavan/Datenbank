@@ -64,13 +64,16 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 --------------------------------------------------------------------------------------------*/
 
-/* Route, um alle Documente in einer Datenbank abzurufen und als JSON-Objekt an einen Client zurückzugeben, 
-der eine Anfrage an den Pfad `/documents` sendet.*/
+/* 
+Route, um alle Documente in einer Datenbank abzurufen und als JSON-Objekt an einen Client zurückzugeben, 
+der eine Anfrage an den Pfad `/documents` sendet.
+*/
 app.get("/documents", async (req, res) => {
   const { Document } = require("./models/DocumentModel");
   const allDocs = await Document.find();
   res.status(200).json(allDocs);
-  /*res.json([
+  /*
+  res.json([
     {
       id: 1,
       title: "How to get my food for lunch",
@@ -85,7 +88,8 @@ app.get("/documents", async (req, res) => {
       lastModified: 12345577,
       createdAt: 12345577,
     },
-  ]);*/
+  ]);
+  */
 });
 
 //HTTP POST verb/ Route zum Hochladen einer PDF-Datei /im Ordner uploads gespeichert/ fügen die Daten der Datenbank hinzu.
@@ -145,7 +149,8 @@ app.get('/download/:date/:id', (req, res) => {
 
  ------------------------------------------------------------------------------------------*/
 
-/*app.get("/upload/:id", async (req, res) => {
+/*
+app.get("/upload/:id", async (req, res) => {
   const id = req.params.id;
   const filepath = `${process.cwd()}/uploads/${id}`; // absoluter Pfad ()
   res.setHeader("Content-Type", "application/pdf");
@@ -156,7 +161,8 @@ app.get('/download/:date/:id', (req, res) => {
     }
     return filepath;
   });
-});*/
+});
+*/
 
 //Aufruf eines einzelnen Datensatzes über api ermöglichen
 app.get("/dogs/:id", async (req, res) => {
@@ -165,7 +171,8 @@ app.get("/dogs/:id", async (req, res) => {
   return res.status(200).json(docu);
 });
 
-/*app.delete("/documents/:id", (req, res) => {
+/*
+app.delete("/documents/:id", (req, res) => {
   const id = req.params.id;
   const filepath = `${process.cwd()}/uploads/${id}`;
 
@@ -177,7 +184,8 @@ app.get("/dogs/:id", async (req, res) => {
       res.status(204).send("Datei wurde erfolgreich gelöscht");
     }
   });
-});*/
+});
+*/
 
 //MongoDB Eintrag löschen
 app.delete("/documents/:id", async (req, res) => {
@@ -186,7 +194,7 @@ app.delete("/documents/:id", async (req, res) => {
   return res.status(200).json(deletedDocument);
 });
 
-// Verbindung zur MongoDB-Datenbank herstellen
+//Verbindung zur MongoDB-Datenbank herstellen
 const start = async () => {
   try {
     await mongoose.connect(
