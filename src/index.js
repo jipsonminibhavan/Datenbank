@@ -165,10 +165,15 @@ app.get("/upload/:id", async (req, res) => {
 */
 
 //Aufruf eines einzelnen Datensatzes über api ermöglichen
-app.get("/dogs/:id", async (req, res) => {
+app.get("/documents/:id", async (req, res) => {
   const { id } = req.params;
-  const docu = await Document.findById(id);
-  return res.status(200).json(docu);
+  try {
+    const docu = await Document.findById(id);
+    return res.status(200).json(docu);
+  } catch (error) {
+    console.error(error);
+    res.json({ msg: error });
+  }
 });
 
 /*
@@ -190,8 +195,13 @@ app.delete("/documents/:id", (req, res) => {
 //MongoDB Eintrag löschen
 app.delete("/documents/:id", async (req, res) => {
   const { id } = req.params;
-  const deletedDocument = await Dog.findByIdAndDelete(id);
-  return res.status(200).json(deletedDocument);
+  try {
+    const deletedDocument = await Dog.findByIdAndDelete(id);
+    return res.status(200).json(deletedDocument);
+  } catch (error) {
+    console.error(error);
+    res.json({ msg: error });
+  }
 });
 
 //Verbindung zur MongoDB-Datenbank herstellen
